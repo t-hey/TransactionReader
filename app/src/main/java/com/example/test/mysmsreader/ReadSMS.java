@@ -4,15 +4,19 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 
+import android.media.tv.TvTrackInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,12 +24,13 @@ import java.util.regex.Pattern;
 public class ReadSMS extends AppCompatActivity {
 
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
+    private ArrayList<Transaction> transactionList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_sms);
-
+        transactionList = new ArrayList<Transaction>();
     }
 
     @Override
@@ -82,17 +87,28 @@ public class ReadSMS extends AppCompatActivity {
                         }
                         if (transaction != null) {
                             Log.i("transaction", transaction.toString());
+                            transactionList.add(transaction);
                         }
                     }
                 } while (cursor.moveToPrevious());
             }
+
+            // Create The Adapter with passing ArrayList as 3rd parameter
+            TransactionListAdapter arrayAdapter = new TransactionListAdapter(this,R.layout.activity_read_sms, transactionList);
+            ListView transactionsListView = (ListView) this.findViewById(R.id.transactionsList);
+            transactionsListView.setAdapter(arrayAdapter);
         }
     }
 
     private Transaction processCurrentAccountTransaction(String body) {
         Transaction transaction = null;
+        String regex;
+        if (body.contains("OTM OPVRAGING")) {
+            regex = " (\\d.+?) (.+?), R-(\\d.+?), (.*)";
+        } else {
+            regex = " (\\d.+?) (.+?), (.+?), R(\\d.+?), (.*)";
+        }
 
-        final String regex = " (\\d.+?) (.+?), (.+?), R(\\d.+?), (.*)";
         final String string = body;
 
         final Pattern pattern = Pattern.compile(regex);
@@ -109,11 +125,15 @@ public class ReadSMS extends AppCompatActivity {
             transaction = new Transaction();
             transaction.set_date(matcher.group(1));
             transaction.set_type(getTransactionType(matcher.group(2)));
-            transaction.set_supplier(matcher.group(3));
-            String amountStr = matcher.group(4);
-            amountStr = amountStr.replace(",","");
-            transaction.set_amount(Double.parseDouble(amountStr));
-            transaction.set_saldo(getAmountFromStr(matcher.group(5)));
+            if (body.contains("OTM OPVRAGING")) {
+                transaction.set_supplier("ATM");
+                transaction.set_amount(getAmount(matcher.group(3)));
+                transaction.set_saldo(getAmountFromStr(matcher.group(4)));
+            } else {
+                transaction.set_supplier(matcher.group(3));
+                transaction.set_amount(getAmount(matcher.group(4)));
+                transaction.set_saldo(getAmountFromStr(matcher.group(5)));
+            }
         }
         return transaction;
     }
@@ -127,6 +147,8 @@ public class ReadSMS extends AppCompatActivity {
             transactionType = Transaction.TRANSACTION_DEPOSIT;
         } else if (transactionTypeStr.contains("AFTREKORDER NA") ||
                 transactionTypeStr.contains("IBANK BETALING NA") ||
+                transactionTypeStr.contains("MAGTIGING") ||
+                transactionTypeStr.contains("BETALING VANAF") ||
                 transactionTypeStr.contains("NAEDO OPSPR") ||
                 transactionTypeStr.contains("EKSTERN NA") ||
                 transactionTypeStr.contains("ACB DEBIET")) {
