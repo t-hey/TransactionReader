@@ -19,4 +19,44 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:onClick="startReadingSMSDatabase"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/transactionsList"
+        android:layout_marginTop="13dp"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Transactions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:layout_below="@+id/start_read"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="12dp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text='Pressing the "Start" button will read the sms for transaction in the sms inbox'
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:layout_toRightOf="@+id/start_read"
+        android:layout_toEndOf="@+id/start_read"
+        android:layout_marginLeft="28dp"
+        android:layout_marginStart="28dp"
+        android:textSize="12sp"
+        android:layout_alignBottom="@+id/start_read"
+        android:layout_alignParentTop="true" />
 </RelativeLayout>
