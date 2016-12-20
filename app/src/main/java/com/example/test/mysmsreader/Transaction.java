@@ -23,8 +23,27 @@ public class Transaction {
     private String _smsData;
 
     public Transaction() {
-        final Calendar calendar = Calendar.getInstance();
-        _date = calendar.DAY_OF_MONTH + "/" + (calendar.MONTH + 1) + "/" + Calendar.YEAR;
+        //final Calendar calendar = Calendar.getInstance();
+        _date = Calendar.DAY_OF_MONTH + "/" + (Calendar.MONTH + 1) + "/" + Calendar.YEAR;
+    }
+
+    public static String getTransactionDisc(int transactionType) {
+        switch (transactionType) {
+            case TRANSACTION_DEPOSIT:
+                return "Deposit";
+
+            case TRANSACTION_PAYMENT:
+                return "Payment";
+
+            case TRANSACTION_WITDRAWEL:
+                return "Withdrawel";
+
+            case TRANSACTION_NONE:
+                return "None";
+
+            default:
+                return "Other";
+        }
     }
 
     public double get_saldo() {
