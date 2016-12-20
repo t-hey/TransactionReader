@@ -2,6 +2,7 @@ package com.example.test.mysmsreader;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -76,6 +77,20 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             }
 
             holder.category.setText(Transaction.getTransactionDisc(_transactionList.get(position).get_type()));
+            switch (_transactionList.get(position).get_type()) {
+                case Transaction.TRANSACTION_PAYMENT:
+                    holder.category.setTextColor(Color.RED);
+                    break;
+                case Transaction.TRANSACTION_WITDRAWEL:
+                    holder.category.setTextColor(Color.rgb(255,140,0));
+                    break;
+                case Transaction.TRANSACTION_DEPOSIT:
+                    holder.category.setTextColor(Color.BLUE);
+                    break;
+                default:
+                    holder.category.setTextColor(Color.BLACK);
+                    break;
+            }
             holder.amount.setText("R" + String.valueOf(_transactionList.get(position).get_amount()));
             holder.supplier.setText(_transactionList.get(position).get_supplier());
             holder.date.setText(_transactionList.get(position).get_date());
